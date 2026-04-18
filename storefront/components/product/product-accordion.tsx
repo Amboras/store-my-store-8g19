@@ -25,7 +25,7 @@ function AccordionItem({
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="text-sm font-medium">{title}</span>
+        <span className="text-sm font-semibold tracking-wide">{title}</span>
         <ChevronDown
           className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
@@ -54,20 +54,33 @@ export default function ProductAccordion({ description, details }: ProductAccord
         </AccordionItem>
       )}
 
-      <AccordionItem title="Shipping & Returns">
+      <AccordionItem title="Candle Care">
         <ul className="space-y-2">
-          <li>Free standard shipping on orders over $75</li>
-          <li>Express shipping available at checkout</li>
-          <li>Free returns within 30 days of delivery</li>
-          <li>Items must be unworn with original tags</li>
+          <li>Trim wick to 5mm before each burn to prevent soot and ensure an even flame.</li>
+          <li>Allow wax to pool to the edges on the first burn (2–3 hours) to prevent tunnelling.</li>
+          <li>Never burn for more than 4 hours at a time.</li>
+          <li>Keep away from drafts, children, and pets.</li>
+          <li>Discontinue use when 1cm of wax remains.</li>
         </ul>
       </AccordionItem>
 
-      <AccordionItem title="Care Instructions">
+      <AccordionItem title="Shipping & Returns">
         <ul className="space-y-2">
-          <li>Please refer to the care label on the product</li>
-          <li>Store in a cool, dry place away from direct sunlight</li>
-          <li>Handle with care to maintain product quality</li>
+          <li>Free shipping on orders over ₹1,500 across India.</li>
+          <li>Orders dispatched within 2–3 business days.</li>
+          <li>Standard delivery: 5–7 business days.</li>
+          <li>Returns accepted within 14 days for unopened, undamaged products.</li>
+          <li>Fragrance is personal — please check scent notes before ordering.</li>
+        </ul>
+      </AccordionItem>
+
+      <AccordionItem title="Ingredients & Sustainability">
+        <ul className="space-y-2">
+          <li>100% natural soy wax — clean-burning and biodegradable.</li>
+          <li>Premium fragrance oils, free from phthalates and parabens.</li>
+          <li>Cotton wick — lead-free for a steady, safe flame.</li>
+          <li>Reusable glass vessel — wash and repurpose once candle is finished.</li>
+          <li>Recyclable packaging with minimal plastic use.</li>
         </ul>
       </AccordionItem>
     </div>

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600 // ISR: revalidate every hour
+export const revalidate = 3600
 import { medusaServerClient } from '@/lib/medusa-client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Truck, RotateCcw, Shield, ChevronRight } from 'lucide-react'
+import { ChevronRight, Star } from 'lucide-react'
 import ProductActions from '@/components/product/product-actions'
 import ProductAccordion from '@/components/product/product-accordion'
 import { ProductViewTracker } from '@/components/product/product-view-tracker'
@@ -74,7 +74,7 @@ export async function generateMetadata({
 
   return {
     title: product.title,
-    description: product.description || `Shop ${product.title}`,
+    description: product.description || `Shop ${product.title} — handcrafted soy candles by Luminae`,
     openGraph: {
       title: product.title,
       description: product.description || `Shop ${product.title}`,
@@ -82,6 +82,14 @@ export async function generateMetadata({
     },
   }
 }
+
+// Static social proof bar data
+const socialProofStats = [
+  { value: '4.9', label: 'Average Rating' },
+  { value: '1,200+', label: 'Happy Customers' },
+  { value: '100%', label: 'Natural Soy Wax' },
+  { value: '45–55h', label: 'Burn Time' },
+]
 
 export default async function ProductPage({
   params,
@@ -102,7 +110,6 @@ export default async function ProductPage({
     ...(product.images || []).filter((img: any) => img.url !== product.thumbnail),
   ]
 
-  // Use placeholder if no images
   const displayImages = allImages.length > 0
     ? allImages
     : [{ url: getProductPlaceholder(product.id) }]
@@ -110,23 +117,41 @@ export default async function ProductPage({
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="border-b">
+      <div className="border-b" style={{ backgroundColor: 'hsl(36 25% 97%)' }}>
         <div className="container-custom py-3">
           <nav className="flex items-center gap-2 text-xs text-muted-foreground">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="h-3 w-3" />
-            <Link href="/products" className="hover:text-foreground transition-colors">Shop</Link>
+            <Link href="/products" className="hover:text-foreground transition-colors">Candles</Link>
             <ChevronRight className="h-3 w-3" />
             <span className="text-foreground">{product.title}</span>
           </nav>
         </div>
       </div>
 
-      <div className="container-custom py-8 lg:py-12">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+      {/* Social Proof Bar */}
+      <div className="border-b" style={{ backgroundColor: 'hsl(20 15% 10%)' }}>
+        <div className="container-custom py-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            {socialProofStats.map(({ value, label }) => (
+              <div key={label} className="flex flex-col items-center">
+                <span className="font-heading text-lg font-semibold" style={{ color: 'hsl(28 55% 65%)' }}>
+                  {value}
+                </span>
+                <span className="text-[10px] uppercase tracking-wider" style={{ color: 'hsl(36 12% 55%)' }}>
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="container-custom py-10 lg:py-16">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20">
           {/* Product Images */}
           <div className="space-y-3">
-            <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-sm">
+            <div className="relative aspect-[4/5] overflow-hidden bg-muted rounded-sm">
               <Image
                 src={displayImages[0].url}
                 alt={product.title}
@@ -142,31 +167,46 @@ export default async function ProductPage({
                 {displayImages.slice(1, 5).map((image: any, idx: number) => (
                   <div
                     key={idx}
-                    className="relative aspect-[3/4] overflow-hidden bg-muted rounded-sm"
+                    className="relative aspect-[4/5] overflow-hidden bg-muted rounded-sm"
                   >
                     <Image
                       src={image.url}
-                      alt={`${product.title} ${idx + 2}`}
+                      alt={`${product.title} view ${idx + 2}`}
                       fill
-                      sizes="12vw"
+                      sizes="15vw"
                       className="object-cover"
                     />
                   </div>
                 ))}
               </div>
             )}
+
+            {/* Rating stars under images */}
+            <div className="flex items-center gap-2 pt-1">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    key={s}
+                    className="h-4 w-4"
+                    fill={s <= 5 ? 'hsl(28 65% 52%)' : 'none'}
+                    style={{ color: 'hsl(28 65% 52%)' }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground">4.9 — Over 1,200 orders shipped</span>
+            </div>
           </div>
 
           {/* Product Info */}
-          <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-            {/* Title & Subtitle */}
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-5">
+            {/* Title */}
             <div>
               {product.subtitle && (
-                <p className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-2">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">
                   {product.subtitle}
                 </p>
               )}
-              <h1 className="text-h2 font-heading font-semibold">{product.title}</h1>
+              <h1 className="font-heading text-h2 font-semibold leading-tight">{product.title}</h1>
             </div>
 
             <ProductViewTracker
@@ -177,26 +217,10 @@ export default async function ProductPage({
               value={product.variants?.[0]?.calculated_price?.calculated_amount ?? null}
             />
 
-            {/* Variant Selector + Price + Add to Cart (client component) */}
+            {/* Variant Selector + Price + Add to Cart */}
             <ProductActions product={product} variantExtensions={variantExtensions} />
 
-            {/* Trust Signals */}
-            <div className="grid grid-cols-3 gap-4 py-6 border-t">
-              <div className="text-center">
-                <Truck className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">Free Shipping</p>
-              </div>
-              <div className="text-center">
-                <RotateCcw className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">30-Day Returns</p>
-              </div>
-              <div className="text-center">
-                <Shield className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">Secure Checkout</p>
-              </div>
-            </div>
-
-            {/* Accordion Sections */}
+            {/* Accordion */}
             <ProductAccordion
               description={product.description}
               details={product.metadata as Record<string, string> | undefined}
